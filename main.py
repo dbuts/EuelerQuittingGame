@@ -5,6 +5,9 @@ import webbrowser
 window = Tk()
 window.title("Euler's Guessing Simulator")
 window.geometry('1600x900')
+window.columnconfigure(0, weight = 1)
+window.columnconfigure(1, weight = 4)
+
 default_font = ("Arial", 12)
 output = StringVar()
 output.set("Returned Value: N/A")
