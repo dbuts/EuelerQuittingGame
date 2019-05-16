@@ -11,9 +11,13 @@ window.columnconfigure(1, weight = 4)
 
 default_font = ("Arial", 12)
 
-#Variable to control output label's text
-output = StringVar()
-output.set("Returned Value: N/A")
+#Variables to control output labels' text
+guessOutput = StringVar()
+guessOutput.set("Guessed Maximum Value: N/A")
+actualOutput = StringVar()
+actualOutput.set("Actual Maximum Value: N/A")
+validityOutput = StringVar()
+validityOutput.set("")
 
 #Functions
 def callback(event):
@@ -23,7 +27,14 @@ def run():
     min = int(minimum.get())
     max = int(maximum.get())
     valSize = int(size.get())
-    output.set("Returned Value: " + str(eulerGuess(min, max, valSize)))
+    eGuess = eulerGuess(min, max, valSize)
+    guessOutput.set("Guessed Value: " + str(eGuess))
+    actualOutput.set("Actual Value: " + str(findMax()))
+    if validityChecker(eGuess):
+        validityOutput.set("Correct!")
+    else:
+        validityOutput.set("Incorrect.")
+    
 
 #Label for description and video going more in depth by Vsauce
 description = Label(window, text = "This is a program that simulates the Euler process for guessing the highest number in a series of hidden random numbers.", font = default_font)
@@ -42,19 +53,23 @@ size = Entry(window, width=50)
 sizeLbl = Label(window, text="Size: ", font = default_font)
 
 
-minimum.grid(column=0, row = 4)
-minLbl.grid(column=0, row = 3)
-maximum.grid(column=0, row = 6)
-maxLbl.grid(column=0, row = 5)
-size.grid(column=0, row = 8)
-sizeLbl.grid(column=0, row = 7)
+minimum.grid(column=0, row = 6)
+minLbl.grid(column=0, row = 5)
+maximum.grid(column=0, row = 8)
+maxLbl.grid(column=0, row = 7)
+size.grid(column=0, row = 10)
+sizeLbl.grid(column=0, row = 9)
 
-#Label to show returned value and button to initiate program
-returnedVal=Label( window,  textvariable = output)
+#Labels to show guess vs correct answer and button to initiate program
+returnedVal=Label( window,  textvariable = guessOutput)
 returnedVal.grid(column= 0, row = 2)
+correctVal=Label( window,  textvariable = actualOutput)
+correctVal.grid(column= 0, row = 3)
+validityVal=Label( window,  textvariable = validityOutput)
+validityVal.grid(column= 0, row = 4)
 
 start = Button(window, text = "Start", font = default_font, command = run)
-start.grid(column=0, row = 10)
+start.grid(column=0, row = 15)
 
 
 
