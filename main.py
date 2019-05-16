@@ -24,12 +24,18 @@ link.grid(column=0, row =1)
 returnedVal.grid(column= 0, row = 2)
 
 minimum = Entry(window, width=50)
+minLbl = Label(window, text="Minimum: ", font = default_font)
 maximum = Entry(window, width=50)
+maxLbl = Label(window, text="Maximum: ", font = default_font)
 size = Entry(window, width=50)
+sizeLbl = Label(window, text="Size: ", font = default_font)
 
-minimum.grid(column=0, row = 3)
-maximum.grid(column=0, row = 4)
-size.grid(column=0, row = 5)
+minimum.grid(column=1, row = 3)
+minLbl.grid(column=0, row = 3)
+maximum.grid(column=1, row = 4)
+maxLbl.grid(column=0, row = 4)
+size.grid(column=1, row = 5)
+sizeLbl.grid(column=0, row = 5)
 
 def run():
     min = int(minimum.get())
