@@ -32,11 +32,10 @@ maximum.grid(column=0, row = 4)
 size.grid(column=0, row = 5)
 
 def run():
-    min = minimum.get()
-    max = maximum.get()
-    valSize = size.get()
-    #returnedVal.text =eulerGuess(min, max, size)
-    output.set("Returned Value: " + str(eulerGuess(0,0,0)))
+    min = int(minimum.get())
+    max = int(maximum.get())
+    valSize = int(size.get())
+    output.set("Returned Value: " + str(eulerGuess(min, max, valSize)))
 
 start = Button(window, text = "Start", font = default_font, command = run)
 start.grid(column=0, row = 10)
