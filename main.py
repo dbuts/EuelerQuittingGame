@@ -20,9 +20,6 @@ validityOutput = StringVar()
 validityOutput.set("")
 
 #Functions
-
-sim = Simulation
-
 def callback(event):
     webbrowser.open_new(r"https://www.youtube.com/watch?v=OeJobV4jJG0")
 
@@ -30,10 +27,11 @@ def run():
     min = int(minimum.get())
     max = int(maximum.get())
     valSize = int(size.get())
-    eGuess = sim.eulerGuess(min, max, valSize)
+    sim = Simulation(min, max, valSize)
+    eGuess = sim.eulerGuess()
     guessOutput.set("Guessed Value: " + str(eGuess))
     actualOutput.set("Actual Value: " + str(sim.findMax()))
-    if validityChecker(eGuess):
+    if sim.validityChecker(eGuess):
         validityOutput.set("Correct!")
     else:
         validityOutput.set("Incorrect.")
@@ -49,10 +47,13 @@ link.bind("<Button-1>", callback)
 
 #Text boxes to enter data with accomponying labels
 minimum = Entry(window, width=50)
+minimum.insert(0, "1")
 minLbl = Label(window, text="Minimum: ", font = default_font)
 maximum = Entry(window, width=50)
+maximum.insert(0, "100")
 maxLbl = Label(window, text="Maximum: ", font = default_font)
 size = Entry(window, width=50)
+size.insert(0, "10")
 sizeLbl = Label(window, text="Size: ", font = default_font)
 
 
