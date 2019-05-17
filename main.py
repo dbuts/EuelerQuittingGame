@@ -2,7 +2,7 @@ from tkinter import *
 from simulation import *
 import webbrowser
 from time import sleep
-from math import sqrt
+from math import sqrt, floor, ceil
 
 #Setup the GUI for input
 w = Tk()
@@ -39,6 +39,9 @@ def run():
     min = int(minimum.get())
     max = int(maximum.get())
     valSize = int(size.get())
+    if max-min < valSize:
+        validityOutput.set("Maximum-Minimum must be > Size to have n unique values.")
+        return -1
     sim = Simulation(min, max, valSize)
     eGuess = sim.eulerGuess()
     guessOutput.set("Guessed Value: " + str(eGuess))
@@ -52,6 +55,12 @@ def run():
 
 #Exectutes the run function multiple times and displays average correctness
 def longRun():
+    min = int(minimum.get())
+    max = int(maximum.get())
+    valSize = int(size.get())
+    if max-min < valSize:
+        validityOutput.set("Maximum-Minimum must be > Size to have n unique values.")
+        return -1
     sum = 0
     length = int(numExecs.get())
     for x in range(0, length):
@@ -61,24 +70,42 @@ def longRun():
     average = (float(sum)/float(length)) * 100.0
     validityOutput.set("Average Correct Guess: " + str(average) + "%")
 
+#Runs with the animation
 def animatedRun():
     run()
     createGrid()
     d.mainloop()
 
+#Creates grid of covered values
 def createGrid():
     can.delete("all")
     sz = int(size.get())
+    numColumns = ceil(sqrt(sz))
     if sz and sz <=100:
         #width is width of canvas/sqrt(size) because size = rows*columns
-        width = 1000/ceil(sqrt(sz))
+        width = 1000/numColumns
         #Generate the grid of lines
-        for x in range(0, sz):   #1000/size is the width of each square
+        for x in range(0, numColumns):   #1000/size is the width of each square
             can.create_line(int(x*width)-1, 0, int(x*width)-1, 1000)
-        for y in range(0, sz):   #1000/size is the width of each square
+        for y in range(0, numColumns):   #1000/size is the width of each square
             can.create_line(0,int(y*width)-1, 1000, int(y*width)-1)
+
         #TODO Populate the grid with text containing values
+
         #Covers each unrevealed value with a rectangle object
+        numFullRows = floor(sz/numColumns)
+        remainingVals = sz%(ceil(sqrt(sz)))
+        if remainingVals == 0:
+            numFullRows+=1
+
+        rects = [[None for _ in range(numColumns)] for _ in range(numColumns)]
+        #Creates the arrays in the correct positions
+        for i in range(0, numFullRows):
+            for j in range(0, numColumns):
+                rects[i][x] = can.create_rectangle((j*width)+1, (i*width)+1, (j*width)+(width-1), (i*width)+(width-1), fill = "brown")
+        for n in range(0, int(remainingVals)):
+                rects[numFullRows][n] = can.create_rectangle((n*width)+1, (numFullRows*width)+1, (n*width)+(width-1), (numFullRows*width)+(width-1), fill = "brown")
+
     else:
         errorTxt = can.create_text(500,500, text = "INVALID SIZE. SIZE MUST BE BETWEEN 0 AND 100")
 
