@@ -2,6 +2,7 @@ from tkinter import *
 from simulation import *
 import webbrowser
 from time import sleep
+from math import sqrt
 
 #Setup the GUI for input
 w = Tk()
@@ -69,11 +70,15 @@ def createGrid():
     can.delete("all")
     sz = int(size.get())
     if sz and sz <=100:
-        width = 1000/sz
+        #width is width of canvas/sqrt(size) because size = rows*columns
+        width = 1000/ceil(sqrt(sz))
+        #Generate the grid of lines
         for x in range(0, sz):   #1000/size is the width of each square
             can.create_line(int(x*width)-1, 0, int(x*width)-1, 1000)
         for y in range(0, sz):   #1000/size is the width of each square
             can.create_line(0,int(y*width)-1, 1000, int(y*width)-1)
+        #TODO Populate the grid with text containing values
+        #Covers each unrevealed value with a rectangle object
     else:
         errorTxt = can.create_text(500,500, text = "INVALID SIZE. SIZE MUST BE BETWEEN 0 AND 100")
 
