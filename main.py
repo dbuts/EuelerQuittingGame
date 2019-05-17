@@ -20,6 +20,9 @@ validityOutput = StringVar()
 validityOutput.set("")
 
 #Functions
+
+sim = Simulation
+
 def callback(event):
     webbrowser.open_new(r"https://www.youtube.com/watch?v=OeJobV4jJG0")
 
@@ -27,9 +30,9 @@ def run():
     min = int(minimum.get())
     max = int(maximum.get())
     valSize = int(size.get())
-    eGuess = eulerGuess(min, max, valSize)
+    eGuess = sim.eulerGuess(min, max, valSize)
     guessOutput.set("Guessed Value: " + str(eGuess))
-    actualOutput.set("Actual Value: " + str(findMax()))
+    actualOutput.set("Actual Value: " + str(sim.findMax()))
     if validityChecker(eGuess):
         validityOutput.set("Correct!")
     else:
@@ -70,8 +73,5 @@ validityVal.grid(column= 0, row = 4)
 
 start = Button(window, text = "Start", font = default_font, command = run)
 start.grid(column=0, row = 15)
-
-
-
 
 window.mainloop()
