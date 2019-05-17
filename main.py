@@ -14,6 +14,7 @@ w.columnconfigure(1, weight = 4)
 d = Tk()
 d.title("Animation of Algorithm Running")
 d.geometry('1000x1000')
+d.resizable(width=False, height=False)
 
 can = Canvas(d, width = 1000, height = 1000)
 can.pack()
