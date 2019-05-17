@@ -66,6 +66,7 @@ def animatedRun():
     d.mainloop()
 
 def createGrid():
+    can.delete("all")
     sz = int(size.get())
     if sz and sz <=100:
         width = 1000/sz
@@ -73,6 +74,9 @@ def createGrid():
             can.create_line(int(x*width)-1, 0, int(x*width)-1, 1000)
         for y in range(0, sz):   #1000/size is the width of each square
             can.create_line(0,int(y*width)-1, 1000, int(y*width)-1)
+    else:
+        errorTxt = can.create_text(500,500, text = "INVALID SIZE. SIZE MUST BE BETWEEN 0 AND 100")
+
 #Label for description and video going more in depth by Vsauce
 description = Label(w, text = "This is a program that simulates the Euler process for guessing the highest number in a series of hidden random numbers.", font = default_font)
 link = Label(w,fg="blue", text = "Link to Vsauce video", cursor = "hand2", font = default_font)
