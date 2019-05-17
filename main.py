@@ -1,6 +1,7 @@
 from tkinter import *
 from simulation import *
 import webbrowser
+from time import sleep
 
 #Setup the GUI itsef
 window = Tk()
@@ -33,9 +34,20 @@ def run():
     actualOutput.set("Actual Value: " + str(sim.findMax()))
     if sim.validityChecker(eGuess):
         validityOutput.set("Correct!")
+        return 1
     else:
         validityOutput.set("Incorrect.")
-    
+    return 0
+
+def longRun():
+    sum = 0
+    length = 100
+    for x in range(0, length):
+        sum += run() 
+        sleep(.05)
+        window.update()
+    average = (float(sum)/float(length)) * 100.0
+    validityOutput.set("Average Correct Guess: " + str(average) + "%")
 
 #Label for description and video going more in depth by Vsauce
 description = Label(window, text = "This is a program that simulates the Euler process for guessing the highest number in a series of hidden random numbers.", font = default_font)
@@ -65,14 +77,17 @@ size.grid(column=0, row = 10)
 sizeLbl.grid(column=0, row = 9)
 
 #Labels to show guess vs correct answer and button to initiate program
-returnedVal=Label( window,  textvariable = guessOutput)
+returnedVal=Label(window,  textvariable = guessOutput)
 returnedVal.grid(column= 0, row = 2)
 correctVal=Label( window,  textvariable = actualOutput)
 correctVal.grid(column= 0, row = 3)
 validityVal=Label( window,  textvariable = validityOutput)
 validityVal.grid(column= 0, row = 4)
 
-start = Button(window, text = "Start", font = default_font, command = run)
+start = Button(window, text = "Start (Executes Once)", font = default_font, command = run)
 start.grid(column=0, row = 15)
+
+longTest = Button(window, text = "Long Test (1000 Executions)", font = default_font, command = longRun)
+longTest.grid(column=0, row = 16)
 
 window.mainloop()
