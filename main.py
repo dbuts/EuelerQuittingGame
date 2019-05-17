@@ -41,7 +41,7 @@ def run():
 
 def longRun():
     sum = 0
-    length = 100
+    length = int(numExecs.get())
     for x in range(0, length):
         sum += run() 
         sleep(.05)
@@ -67,6 +67,9 @@ maxLbl = Label(window, text="Maximum: ", font = default_font)
 size = Entry(window, width=50)
 size.insert(0, "10")
 sizeLbl = Label(window, text="Size: ", font = default_font)
+numExecs = Entry(window, width =50)
+numExecs.insert(0, "100")
+numExLbl = Label(window, text="Number of Executions: ", font = default_font)
 
 
 minimum.grid(column=0, row = 6)
@@ -75,6 +78,8 @@ maximum.grid(column=0, row = 8)
 maxLbl.grid(column=0, row = 7)
 size.grid(column=0, row = 10)
 sizeLbl.grid(column=0, row = 9)
+numExecs.grid(column=0, row =18) 
+numExLbl.grid(column=0, row = 17)
 
 #Labels to show guess vs correct answer and button to initiate program
 returnedVal=Label(window,  textvariable = guessOutput)
