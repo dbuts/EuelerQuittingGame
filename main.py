@@ -14,10 +14,10 @@ w.columnconfigure(1, weight = 4)
 #Setup the GUI for canvas with animation
 d = Tk()
 d.title("Animation of Algorithm Running")
-d.geometry('1000x1000')
+d.geometry('1000x1200')
 d.resizable(width=False, height=False)
 
-can = Canvas(d, width = 1000, height = 1000)
+can = Canvas(d, width = 1000, height = 1200)
 can.pack()
 
 #Variables to control output labels' text
@@ -78,8 +78,19 @@ def animatedRun():
 
 #Creates grid of covered values
 def createGrid():
+    #Clear canvas and get values
     can.delete("all")
+    min = int(minimum.get())
+    max = int(maximum.get())
     sz = int(size.get())
+
+    #Create simulation object
+    sim = Simulation(min, max, sz)
+    #Show details at bottom of canvas
+    minText = can.create_text(250,1100, text="Minimum Possible Value: "+str(min),anchor="w")
+    maxText = can.create_text(250,1125, text="Maximum Possible Value: "+str(max),anchor="w")
+    sizeText = can.create_text(250,1150, text="Number of Values: "+str(sz),anchor="w")
+
     numColumns = ceil(sqrt(sz))
     if sz and sz <=100:
         #width is width of canvas/sqrt(size) because size = rows*columns
@@ -87,22 +98,28 @@ def createGrid():
         #Generate the grid of lines
         for x in range(0, numColumns):   #1000/size is the width of each square
             can.create_line(int(x*width)-1, 0, int(x*width)-1, 1000)
-        for y in range(0, numColumns):   #1000/size is the width of each square
+        for y in range(0, numColumns+1):   #1000/size is the width of each square
             can.create_line(0,int(y*width)-1, 1000, int(y*width)-1)
 
         #TODO Populate the grid with text containing values
-
-        #Covers each unrevealed value with a rectangle object
         numFullRows = floor(sz/numColumns)
         remainingVals = sz%(ceil(sqrt(sz)))
         if remainingVals == 0:
             numFullRows+=1
 
+        for i in range(0, numFullRows):
+            for j in range(0, numColumns):
+                can.create_text(((j*width)+width/2), ((i*width)+width/2), text= str(sim.values[i*numColumns + j]), width = width-2)
+        for x in range(int(remainingVals)):
+            can.create_text(((x*width)+width/2), ((numFullRows*width) +width/2),text=str(sim.values[numFullRows*numColumns + x]), width = width-2)
+
+        #Covers each unrevealed value with a rectangle object
         rects = [[None for _ in range(numColumns)] for _ in range(numColumns)]
+
         #Creates the arrays in the correct positions
         for i in range(0, numFullRows):
             for j in range(0, numColumns):
-                rects[i][x] = can.create_rectangle((j*width)+1, (i*width)+1, (j*width)+(width-1), (i*width)+(width-1), fill = "brown")
+                rects[i][j] = can.create_rectangle((j*width)+1, (i*width)+1, (j*width)+(width-1), (i*width)+(width-1), fill = "brown")
         for n in range(0, int(remainingVals)):
                 rects[numFullRows][n] = can.create_rectangle((n*width)+1, (numFullRows*width)+1, (n*width)+(width-1), (numFullRows*width)+(width-1), fill = "brown")
 
@@ -151,7 +168,7 @@ validityVal=Label( w,  textvariable = validityOutput)
 validityVal.grid(column= 0, row = 4)
 
 #Button placement and assignment
-start = Button(w, text = "Start (Executes Once)", font = default_font, command = animatedRun)
+start = Button(w, text = "Start (Executes Once)", font = default_font, command=animatedRun)
 start.grid(column=0, row = 15)
 
 longTest = Button(w, text = "Long Test (1000 Executions)", font = default_font, command = longRun)
