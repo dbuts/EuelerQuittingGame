@@ -72,6 +72,7 @@ def longRun():
 
 #Runs with the animation
 def animatedRun():
+    speed = .5
     #Get value and instantiate a simulation object
     min = int(minimum.get())
     max = int(maximum.get())
@@ -82,21 +83,72 @@ def animatedRun():
     rects = createGrid(sim)
 
     #Steps text
-    step1 = can.create_text(100,1025, text="Find Stopping Point (Size/e)",anchor="w", fill="red")
-    step2 = can.create_text(250,1125, text="Maximum Possible V: "+str(max),anchor="w")
-    step3 = can.create_text(250,1150, text="Number of Values: "+str(sz),anchor="w")
-    currProc = can.create_text(250, 1175, text= "Current Process: Calculating stopping point",anchor="w")
+    step1 = can.create_text(100,1025, text="Find Stopping Point (Size/e)",anchor="w")
+    step2 = can.create_text(100,1050, text="Find Maximum Value before and including stopping point",anchor="w")
+    step3 = can.create_text(100,1075, text="Find first value greater than previously found max",anchor="w")
+    currProc = can.create_text(100, 1175, text= "Current Process: Calculating stopping point",anchor="w")
     
     #Start the actual animation loop
     d.update()
 
-    #Essentially doing eulerGuess() but with visual updates
+#Essentially doing eulerGuess() but with visual updates
     stopPoint = ceil(sz/e)
+    sleep(speed)
+    can.itemconfig(step1, fill = "red")
     can.itemconfig(currProc,text="Current Process: Stopping Point found to be: "+str(stopPoint))
+    
     numColumns = ceil(sqrt(sz))
+
     #Color the stopping point blue
-    can.itemconfig(rects[floor((stopPoint-1)/numColumns)][(stopPoint-1)%numColumns], fill="blue")
+    stopRow = floor((stopPoint-1)/numColumns)
+    stopCol = (stopPoint-1)%numColumns
+    can.itemconfig(rects[stopRow][stopCol], fill="blue")
     d.update()
+    sleep(speed)
+    can.itemconfig(step1, fill = "green")
+    can.itemconfig(step2, fill = "red")
+    can.itemconfig(currProc, text = "Current Process: Find Maximum value within range of 0 to Stopping Point.")
+    
+#Start of Finding max in range 0 to Stopping Point
+    #arbitrarily small number
+    currMax = -999999999999999
+    maxID = None
+    for i in range(stopRow):
+        for j in range(numColumns):
+            can.itemconfig(rects[i][j],fill = "", outline="yellow", width = "10")
+            sleep(speed)
+            d.update()
+            if sim.values[i*numColumns + j] > currMax:
+                currMax = sim.values[i*numColumns + j] 
+                can.delete(maxID)
+                maxID = rects[i][j]
+                can.itemconfig(rects[i][j],fill = "", outline="green", width = "10")
+                can.itemconfig(currProc, text = "Current Process: Greater than previous max. New max is: "+str(currMax))
+            else:
+                can.delete(rects[i][j])
+            d.update()
+    
+    for j in range(stopCol+1):
+            can.itemconfig(rects[stopRow][j],fill = "", outline="yellow", width = "10")
+            sleep(speed)
+            d.update()
+            if sim.values[stopRow*numColumns + j] > currMax:
+                currMax = sim.values[stopRow*numColumns + j] 
+                can.delete(maxID)
+                maxID = rects[stopRow][j]
+                can.itemconfig(currProc, text = "Current Process: Greater than previous max. New max is: "+str(currMax))
+                sleep(speed)
+                can.itemconfig(rects[stopRow][j],fill = "", outline="green", width = "10")
+
+            else:
+                can.delete(rects[stopRow][j])
+            d.update()
+#End of Finding max in range 0 to Stopping Point
+    can.itemconfig(step2, fill = "green")
+    can.itemconfig(currProc, text = "Current Process: Find first value greater than maximum just found.")
+    can.itemconfig(step3, fill = "red")
+    
+#Start of Finding final Guess Value
 
 #Creates grid of covered values
 def createGrid(sim):
@@ -132,8 +184,6 @@ def createGrid(sim):
         #Populates the array of rectangles in the correct positions
         for i in range(0, numFullRows):
             for j in range(0, numColumns):
-                print("i: " + str(i))
-                print("j: " + str(j))
                 rects[i][j] = can.create_rectangle((j*width)+1, (i*width)+1, (j*width)+(width-1), (i*width)+(width-1), fill = "brown")
         for n in range(0, int(remainingVals)):
                 rects[numFullRows][n] = can.create_rectangle((n*width)+1, (numFullRows*width)+1, (n*width)+(width-1), (numFullRows*width)+(width-1), fill = "brown")
