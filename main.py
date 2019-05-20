@@ -35,14 +35,13 @@ def callback(event):
     webbrowser.open_new(r"https://www.youtube.com/watch?v=OeJobV4jJG0")
 
 #runs the eulerGuess algorithm once and outputs information to GUI
-def run():
+def run(sim):
     min = int(minimum.get())
     max = int(maximum.get())
     valSize = int(size.get())
     if max-min < valSize:
         validityOutput.set("Maximum-Minimum must be > Size to have n unique values.")
         return -1
-    sim = Simulation(min, max, valSize)
     eGuess = sim.eulerGuess()
     guessOutput.set("Guessed Value: " + str(eGuess))
     actualOutput.set("Actual Value: " + str(sim.findMax()))
@@ -64,7 +63,8 @@ def longRun():
     sum = 0
     length = int(numExecs.get())
     for x in range(0, length):
-        sum += run() 
+        sim = Simulation(min, max, valSize)
+        sum += run(sim) 
         sleep(.05)
         w.update()
     average = (float(sum)/float(length)) * 100.0
@@ -72,24 +72,39 @@ def longRun():
 
 #Runs with the animation
 def animatedRun():
-    run()
-    createGrid()
-    d.mainloop()
+    #Get value and instantiate a simulation object
+    min = int(minimum.get())
+    max = int(maximum.get())
+    sz = int(size.get())
+    sim = Simulation(min, max, sz)
+
+    run(sim)
+    rects = createGrid(sim)
+
+    #Steps text
+    step1 = can.create_text(100,1025, text="Find Stopping Point (Size/e)",anchor="w", fill="red")
+    step2 = can.create_text(250,1125, text="Maximum Possible V: "+str(max),anchor="w")
+    step3 = can.create_text(250,1150, text="Number of Values: "+str(sz),anchor="w")
+    currProc = can.create_text(250, 1175, text= "Current Process: Calculating stopping point",anchor="w")
+    
+    #Start the actual animation loop
+    d.update()
+
+    #Essentially doing eulerGuess() but with visual updates
+    stopPoint = ceil(sz/e)
+    can.itemconfig(currProc,text="Current Process: Stopping Point found to be: "+str(stopPoint))
+    numColumns = ceil(sqrt(sz))
+    #Color the stopping point blue
+    can.itemconfig(rects[floor((stopPoint-1)/numColumns)][(stopPoint-1)%numColumns], fill="blue")
+    d.update()
 
 #Creates grid of covered values
-def createGrid():
+def createGrid(sim):
     #Clear canvas and get values
     can.delete("all")
     min = int(minimum.get())
     max = int(maximum.get())
     sz = int(size.get())
-
-    #Create simulation object
-    sim = Simulation(min, max, sz)
-    #Show details at bottom of canvas
-    minText = can.create_text(250,1100, text="Minimum Possible Value: "+str(min),anchor="w")
-    maxText = can.create_text(250,1125, text="Maximum Possible Value: "+str(max),anchor="w")
-    sizeText = can.create_text(250,1150, text="Number of Values: "+str(sz),anchor="w")
 
     numColumns = ceil(sqrt(sz))
     if sz and sz <=100:
@@ -101,11 +116,9 @@ def createGrid():
         for y in range(0, numColumns+1):   #1000/size is the width of each square
             can.create_line(0,int(y*width)-1, 1000, int(y*width)-1)
 
-        #TODO Populate the grid with text containing values
+        #Populate the grid with text containing values
         numFullRows = floor(sz/numColumns)
         remainingVals = sz%(ceil(sqrt(sz)))
-        if remainingVals == 0:
-            numFullRows+=1
 
         for i in range(0, numFullRows):
             for j in range(0, numColumns):
@@ -116,13 +129,15 @@ def createGrid():
         #Covers each unrevealed value with a rectangle object
         rects = [[None for _ in range(numColumns)] for _ in range(numColumns)]
 
-        #Creates the arrays in the correct positions
+        #Populates the array of rectangles in the correct positions
         for i in range(0, numFullRows):
             for j in range(0, numColumns):
+                print("i: " + str(i))
+                print("j: " + str(j))
                 rects[i][j] = can.create_rectangle((j*width)+1, (i*width)+1, (j*width)+(width-1), (i*width)+(width-1), fill = "brown")
         for n in range(0, int(remainingVals)):
                 rects[numFullRows][n] = can.create_rectangle((n*width)+1, (numFullRows*width)+1, (n*width)+(width-1), (numFullRows*width)+(width-1), fill = "brown")
-
+        return rects
     else:
         errorTxt = can.create_text(500,500, text = "INVALID SIZE. SIZE MUST BE BETWEEN 0 AND 100")
 
