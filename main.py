@@ -115,30 +115,32 @@ def animatedRun():
     maxID = None
     for i in range(stopRow):
         for j in range(numColumns):
-            can.itemconfig(rects[i][j],fill = "", outline="yellow", width = "10")
-            sleep(speed)
+            can.itemconfig(rects[i][j],fill = "", outline="yellow", width = "5")
             d.update()
+            sleep(speed)
+
             if sim.values[i*numColumns + j] > currMax:
                 currMax = sim.values[i*numColumns + j] 
                 can.delete(maxID)
                 maxID = rects[i][j]
-                can.itemconfig(rects[i][j],fill = "", outline="green", width = "10")
+                can.itemconfig(rects[i][j],fill = "", outline="green", width = "5")
                 can.itemconfig(currProc, text = "Current Process: Greater than previous max. New max is: "+str(currMax))
             else:
                 can.delete(rects[i][j])
             d.update()
     
     for j in range(stopCol+1):
-            can.itemconfig(rects[stopRow][j],fill = "", outline="yellow", width = "10")
-            sleep(speed)
+            can.itemconfig(rects[stopRow][j],fill = "", outline="yellow", width = "5")
             d.update()
+            sleep(speed)
+
             if sim.values[stopRow*numColumns + j] > currMax:
                 currMax = sim.values[stopRow*numColumns + j] 
                 can.delete(maxID)
                 maxID = rects[stopRow][j]
                 can.itemconfig(currProc, text = "Current Process: Greater than previous max. New max is: "+str(currMax))
                 sleep(speed)
-                can.itemconfig(rects[stopRow][j],fill = "", outline="green", width = "10")
+                can.itemconfig(rects[stopRow][j],fill = "", outline="green", width = "5")
 
             else:
                 can.delete(rects[stopRow][j])
@@ -147,8 +149,85 @@ def animatedRun():
     can.itemconfig(step2, fill = "green")
     can.itemconfig(currProc, text = "Current Process: Find first value greater than maximum just found.")
     can.itemconfig(step3, fill = "red")
-    
+    d.update()
 #Start of Finding final Guess Value
+    finalGuess = None
+    for l in range(stopCol+1, numColumns):
+        can.itemconfig(rects[stopRow][l],fill = "", outline="yellow", width = "5")
+        d.update()
+        sleep(speed)
+        if sim.values[stopRow*numColumns + l] > currMax:
+            finalGuess = sim.values[stopRow*numColumns + l] 
+            can.itemconfig(currProc, text = "Current Process: Value Greater than previous max found. ")
+            sleep(speed)
+            can.itemconfig(currProc, text = "Current Process: Final Guess is :"+str(finalGuess))
+            can.itemconfig(rects[stopRow][l],fill = "", outline="blue", width = "5")
+
+        else:
+            sleep(speed)
+            can.delete(rects[stopRow][l])
+        d.update()
+
+    numFullRows = floor(sz/numColumns)
+    for m in range(stopRow+1, numFullRows):
+        for n in range(0,numColumns):
+            if not finalGuess:
+                can.itemconfig(rects[m][n],fill = "", outline="yellow", width = "5")
+                d.update()
+                sleep(speed)
+
+                if sim.values[m*numColumns + n] > currMax:
+                    finalGuess = sim.values[m*numColumns + n] 
+                    can.itemconfig(currProc, text = "Current Process: Value Greater than previous max found. ")
+                    sleep(speed)
+                    can.itemconfig(currProc, text = "Current Process: Final Guess is :"+str(finalGuess))
+                    can.itemconfig(rects[m][n],fill = "", outline="blue", width = "5")
+                    can.itemconfig(step3, fill = "green")
+                    d.update()
+                    break
+                else:
+                    sleep(speed)
+                    can.delete(rects[m][n])
+                d.update()
+
+#Search non full row if finalGuess hasn't been made yet
+
+    for t in range(sz%(ceil(sqrt(sz)))-1):
+        if not finalGuess:
+            can.itemconfig(rects[numFullRows][t],fill = "", outline="yellow", width = "5")
+            d.update()
+            sleep(speed)
+
+            if sim.values[(numFullRows)*numColumns + t] > currMax:
+                finalGuess = sim.values[(numFullRows)*numColumns + t] 
+                can.itemconfig(currProc, text = "Current Process: Value Greater than previous max found. ")
+                sleep(speed)
+                can.itemconfig(currProc, text = "Current Process: Final Guess is "+str(finalGuess))
+                can.itemconfig(rects[numFullRows][t],fill = "", outline="blue")
+                can.itemconfig(step3, fill = "green")
+                d.update()
+                sleep(speed)
+                break
+
+        else:
+            sleep(speed)
+            can.delete(rects[numFullRows][t-1])
+        d.update()
+#if all values have been checked and none greater, forced to pick final value
+    if not finalGuess:
+        finalGuess = sim.values[(numFullRows)*numColumns + sz%ceil(sqrt(sz))-1]
+        row = ceil(sz/numColumns)
+        column = sz%numColumns
+        #Deals with perfect squares having sqrt 0
+        if column == 0:
+            column = numColumns
+
+        can.itemconfig(rects[row-1][column-1], fill = "", outline="blue", width = "5")
+        d.update()
+        sleep(speed)
+        can.itemconfig(currProc, text = "Current Process: Out of Options, Final Guess is "+str(finalGuess))
+        can.itemconfig(step3, fill = "green")
+        d.update()
 
 #Creates grid of covered values
 def createGrid(sim):
