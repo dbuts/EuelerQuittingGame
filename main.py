@@ -11,14 +11,7 @@ w.geometry('1920x1080')
 w.columnconfigure(0, weight = 1)
 w.columnconfigure(1, weight = 4)
 
-#Setup the GUI for canvas with animation
-d = Tk()
-d.title("Animation of Algorithm Running")
-d.geometry('1000x1200') 
-d.resizable(width=False, height=False)
 
-can = Canvas(d, width = 1000, height = 1200)
-can.pack()
 
 #Variables to control output labels' text
 default_font = ("Arial", 12)
@@ -70,8 +63,16 @@ def longRun():
     average = (float(sum)/float(length)) * 100.0
     validityOutput.set("Average Correct Guess: " + str(average) + "%")
 
-#Runs with the animation
 def animatedRun():
+    #Setup the GUI for canvas with animation
+    d = Tk()
+    d.title("Animation of Algorithm Running")
+    d.geometry('1000x1200') 
+    d.resizable(width=False, height=False)
+
+    can = Canvas(d, width = 1000, height = 1200)
+    can.pack()
+
     speed = .5
     #Get value and instantiate a simulation object
     min = int(minimum.get())
@@ -80,7 +81,7 @@ def animatedRun():
     sim = Simulation(min, max, sz)
 
     run(sim)
-    rects = createGrid(sim)
+    rects = createGrid(sim, can)
 
     #Steps text
     step1 = can.create_text(100,1025, text="Find Stopping Point (Size/e)",anchor="w")
@@ -235,7 +236,7 @@ def animatedRun():
         d.update()
 
 #Creates grid of covered values
-def createGrid(sim):
+def createGrid(sim, can):
     #Clear canvas and get values
     can.delete("all")
     min = int(minimum.get())
