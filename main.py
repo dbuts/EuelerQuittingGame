@@ -12,6 +12,7 @@ w.columnconfigure(0, weight = 1)
 w.columnconfigure(1, weight = 4)
 
 #Setup the GUI for canvas with animation
+#TODO add slider for speed
 d = Tk()
 d.title("Animation of Algorithm Running")
 d.geometry('1000x1200') 
@@ -86,6 +87,7 @@ def animatedRun():
     step1 = can.create_text(100,1025, text="Find Stopping Point (Size/e)",anchor="w")
     step2 = can.create_text(100,1050, text="Find Maximum Value before and including stopping point",anchor="w")
     step3 = can.create_text(100,1075, text="Find first value greater than previously found max",anchor="w")
+    step4 = can.create_text(100,1100, text="Check if answer was correct",anchor="w")
     currProc = can.create_text(100, 1175, text= "Current Process: Calculating stopping point",anchor="w")
     
     #Start the actual animation loop
@@ -233,6 +235,46 @@ def animatedRun():
         can.itemconfig(currProc, text = "Current Process: Out of Options, Final Guess is "+str(finalGuess))
         can.itemconfig(step3, fill = "green")
         d.update()
+
+#Now check if answer was correct
+    can.itemconfig(step4, fill = "red")
+    actualMax = sim.values[0]
+    location = 0
+    #Find actual maximum value and highlight it in red if not what we guessed
+    for x in range(1, len(sim.values)):
+        if sim.values[x] > actualMax:
+            actualMax = sim.values[x]
+            location = x
+    #If correct
+    if actualMax == finalGuess:
+        testCount = 1
+        print(str(rects))
+        for r in rects:
+            print("iteration: "+str(testCount))
+            testCount+=1
+            for rect in r:
+                if rect and str(can.itemcget(rect, "outline")) != "blue":
+                    can.itemconfig(rect, fill="", outline = "")
+        can.itemconfig(currProc, text = "The guess of "+str(finalGuess)+" was correct!", fill = "green")
+        can.itemconfig(step4, fill="green")
+        d.update
+        return 1
+    #If incorrect
+    else:
+        actualRow = ceil(location/numColumns)
+        actualCol = location%numColumns
+        #Check final column edge case
+        if actualCol == 0:
+            actualCol = numColumns-1
+        for r in rects:
+            for rect in r:
+                can.itemconfig(rect, fill="", outline = "")
+        can.itemconfig(rects[actualRow-1][actualCol], outline="red", width = "5")
+        can.itemconfig(currProc, text ="The guess was wrong, the actual maximum value is: " + str(actualMax), fill = "red")
+        can.itemconfig(step4, fill="green")
+        d.update()
+        return 0
+
 
 #Creates grid of covered values
 def createGrid(sim):
