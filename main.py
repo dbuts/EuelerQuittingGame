@@ -14,7 +14,7 @@ w.columnconfigure(1, weight = 4)
 #Setup the GUI for canvas with animation
 d = Tk()
 d.title("Animation of Algorithm Running")
-d.geometry('1000x1200')
+d.geometry('1000x1200') 
 d.resizable(width=False, height=False)
 
 can = Canvas(d, width = 1000, height = 1200)
@@ -152,22 +152,27 @@ def animatedRun():
     d.update()
 #Start of Finding final Guess Value
     finalGuess = None
+    #Finish the row that the stopping point is on
     for l in range(stopCol+1, numColumns):
+        #Yellow for currently examined value
         can.itemconfig(rects[stopRow][l],fill = "", outline="yellow", width = "5")
         d.update()
         sleep(speed)
+        #Check if this is our guess
         if sim.values[stopRow*numColumns + l] > currMax:
+            #set value of guess to correct value and reflect it on canvas
             finalGuess = sim.values[stopRow*numColumns + l] 
             can.itemconfig(currProc, text = "Current Process: Value Greater than previous max found. ")
             sleep(speed)
             can.itemconfig(currProc, text = "Current Process: Final Guess is :"+str(finalGuess))
             can.itemconfig(rects[stopRow][l],fill = "", outline="blue", width = "5")
-
         else:
+            #if not max value, no need to keep rectangle
             sleep(speed)
             can.delete(rects[stopRow][l])
         d.update()
 
+    #loop through the rest of the complete full rows trying to find max
     numFullRows = floor(sz/numColumns)
     for m in range(stopRow+1, numFullRows):
         for n in range(0,numColumns):
@@ -209,9 +214,9 @@ def animatedRun():
                 sleep(speed)
                 break
 
-        else:
-            sleep(speed)
-            can.delete(rects[numFullRows][t-1])
+            else:
+                sleep(speed)
+                can.delete(rects[numFullRows][t-1])
         d.update()
 #if all values have been checked and none greater, forced to pick final value
     if not finalGuess:
