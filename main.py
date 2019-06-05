@@ -247,9 +247,7 @@ def animatedRun():
     #If correct
     if actualMax == finalGuess:
         testCount = 1
-        print(str(rects))
         for r in rects:
-            print("iteration: "+str(testCount))
             testCount+=1
             for rect in r:
                 if rect and str(can.itemcget(rect, "outline")) != "blue":
